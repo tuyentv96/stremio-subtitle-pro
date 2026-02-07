@@ -10,16 +10,24 @@
       "destination": "/api/configure"
     },
     {
+      "source": "/debug/:config/manifest.json",
+      "destination": "/api/debug-manifest?config=:config"
+    },
+    {
       "source": "/:config/manifest.json",
-      "destination": "/api/manifest"
+      "destination": "/api/manifest?config=:config"
     },
     {
       "source": "/:config/subtitles/movie/:id.json",
-      "destination": "/api/subtitles/movie/:id"
+      "destination": "/api/subtitles/movie/:id?config=:config"
     },
     {
       "source": "/:config/subtitles/series/:id.json",
-      "destination": "/api/subtitles/series/:id"
+      "destination": "/api/subtitles/series/:id?config=:config"
+    },
+    {
+      "source": "/:config/subtitles/merged/:pairId.srt",
+      "destination": "/api/subtitles/merged/:pairId?config=:config"
     }
   ],
   "headers": [

@@ -3,6 +3,7 @@ import { handleError, SubtitleError } from '../../_lib/utils/error-handler.js';
 import { rateLimiters } from '../../_lib/utils/rate-limiter.js';
 import { OpenSubtitlesProvider } from '../../_lib/providers/opensubtitles.js';
 import { SubsourceProvider } from '../../_lib/providers/subsource.js';
+import { getLanguageName } from '../../_lib/utils/languages.js';
 
 /**
  * Subtitle handler for TV series
@@ -38,13 +39,22 @@ export default async function handler(req, res) {
     // Parse config
     const config = parseConfig(configParam);
 
-    // Build search parameters
+    // Get all unique languages needed (collect from all pairs)
+    const languagesNeeded = new Set();
+    config.subtitlePairs.forEach(pair => {
+      languagesNeeded.add(pair.primary);
+      if (pair.secondary) {
+        languagesNeeded.add(pair.secondary);
+      }
+    });
+
+    // Build search parameters with all unique languages
     const searchParams = {
       imdbId,
       type: 'series',
       season: parseInt(season, 10),
       episode: parseInt(episode, 10),
-      languages: config.languages
+      languages: Array.from(languagesNeeded)
     };
 
     // Initialize providers
@@ -98,8 +108,46 @@ export default async function handler(req, res) {
     const subtitles = allResults.flat();
 
     // Deduplicate subtitles by ID
-    const uniqueSubtitles = Array.from(
+    const availableSubtitles = Array.from(
       new Map(subtitles.map(sub => [sub.id, sub])).values()
+    );
+
+    // Build subtitle entries from configured pairs
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    const baseUrl = `${protocol}://${host}`;
+
+    const subtitleEntries = [];
+
+    for (const pair of config.subtitlePairs) {
+      if (!pair.enabled) continue;
+
+      const primarySub = availableSubtitles.find(s => s.lang === pair.primary);
+
+      if (!primarySub) continue; // Skip if primary language not available
+
+      if (!pair.secondary) {
+        // Single language mode: just add primary subtitle
+        subtitleEntries.push(primarySub);
+      } else {
+        // Dual language mode: create merged subtitle
+        const secondarySub = availableSubtitles.find(s => s.lang === pair.secondary);
+
+        if (secondarySub) {
+          const mergedId = `dual_${pair.primary}_${pair.secondary}_${id}`;
+
+          subtitleEntries.push({
+            id: mergedId,
+            url: `${baseUrl}/${configParam}/subtitles/merged/${mergedId}.srt?primaryUrl=${encodeURIComponent(primarySub.url)}&secondaryUrl=${encodeURIComponent(secondarySub.url)}`,
+            lang: `${getLanguageName(pair.primary)} + ${getLanguageName(pair.secondary)}`
+          });
+        }
+      }
+    }
+
+    // Deduplicate final entries
+    const uniqueSubtitles = Array.from(
+      new Map(subtitleEntries.map(sub => [sub.id, sub])).values()
     );
 
     // Return Stremio-compatible response

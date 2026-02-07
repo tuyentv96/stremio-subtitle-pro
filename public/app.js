@@ -6,7 +6,6 @@
   'use strict';
 
   const form = document.getElementById('configForm');
-  const resultSection = document.getElementById('result');
   const installLink = document.getElementById('installLink');
   const copyLinkBtn = document.getElementById('copyLink');
   const manifestUrlEl = document.getElementById('manifestUrl');
@@ -14,6 +13,54 @@
   // API key inputs
   const osApiKey = document.getElementById('osApiKey');
   const ssApiKey = document.getElementById('ssApiKey');
+
+  // Subtitle pair management
+  let pairCounter = 0;
+
+  /**
+   * Add a new subtitle pair
+   */
+  function addSubtitlePair(primaryLang = '', secondaryLang = '') {
+    const template = document.getElementById('subtitlePairTemplate');
+    const clone = template.content.cloneNode(true);
+
+    const pairDiv = clone.querySelector('.subtitle-pair');
+    pairDiv.dataset.pairId = `pair_${pairCounter++}`;
+
+    // Set default values if provided
+    if (primaryLang) {
+      clone.querySelector('.primary-lang-select').value = primaryLang;
+    }
+    if (secondaryLang) {
+      clone.querySelector('.secondary-lang-select').value = secondaryLang;
+    }
+
+    // Add remove button handler
+    const removeBtn = clone.querySelector('.btn-remove-pair');
+    removeBtn.addEventListener('click', () => {
+      pairDiv.remove();
+    });
+
+    document.getElementById('subtitlePairsContainer').appendChild(clone);
+  }
+
+  /**
+   * Get all configured subtitle pairs
+   */
+  function getSubtitlePairs() {
+    const pairs = document.querySelectorAll('.subtitle-pair');
+    return Array.from(pairs).map((pair, index) => {
+      const primary = pair.querySelector('.primary-lang-select').value;
+      const secondary = pair.querySelector('.secondary-lang-select').value;
+
+      return {
+        id: `pair_${index}_${primary}_${secondary || 'null'}`,
+        primary,
+        secondary: secondary || null,  // Empty string becomes null
+        enabled: true
+      };
+    });
+  }
 
   /**
    * Validate form before submission
@@ -29,22 +76,29 @@
       return false;
     }
 
-    // Check if at least one language is selected
-    const selectedLanguages = getSelectedLanguages();
-    if (selectedLanguages.length === 0) {
-      alert('Please select at least one language');
+    // Check if at least one pair is configured
+    const pairs = getSubtitlePairs();
+    if (pairs.length === 0) {
+      alert('Please add at least one language pair');
       return false;
     }
 
-    return true;
-  }
+    // Validate each pair
+    for (const pair of pairs) {
+      // Check if primary is selected
+      if (!pair.primary) {
+        alert('Please select a primary language for all pairs');
+        return false;
+      }
 
-  /**
-   * Get selected languages from checkboxes
-   */
-  function getSelectedLanguages() {
-    const checkboxes = document.querySelectorAll('input[name="language"]:checked');
-    return Array.from(checkboxes).map(cb => cb.value);
+      // Check if primary and secondary are different
+      if (pair.secondary && pair.primary === pair.secondary) {
+        alert('Primary and secondary languages must be different');
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
@@ -55,7 +109,7 @@
     const ssKey = ssApiKey.value.trim();
 
     return {
-      languages: getSelectedLanguages(),
+      subtitlePairs: getSubtitlePairs(),
       providers: {
         opensubtitles: {
           enabled: osKey.length > 0,
@@ -114,14 +168,12 @@
   }
 
   /**
-   * Handle form submission
+   * Generate and update install URLs
    */
-  function handleSubmit(event) {
-    event.preventDefault();
-
+  function updateInstallUrls() {
     // Validate form
     if (!validateForm()) {
-      return;
+      return null;
     }
 
     // Generate config
@@ -142,16 +194,30 @@
     // Update UI
     manifestUrlEl.textContent = manifestUrl;
     installLink.href = stremioInstallUrl;
-    resultSection.classList.remove('hidden');
 
-    // Scroll to result
-    resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return { manifestUrl, stremioInstallUrl };
+  }
+
+  /**
+   * Handle install button click
+   */
+  function handleInstallClick(event) {
+    const urls = updateInstallUrls();
+    if (!urls) {
+      event.preventDefault();
+    }
   }
 
   /**
    * Handle copy button click
    */
   function handleCopyClick() {
+    // Generate URLs first
+    const urls = updateInstallUrls();
+    if (!urls) {
+      return;
+    }
+
     const manifestUrl = manifestUrlEl.textContent;
 
     copyToClipboard(manifestUrl).then(success => {
@@ -174,9 +240,19 @@
    * Initialize the app
    */
   function init() {
+    // Prevent form submission
+    form.addEventListener('submit', (e) => e.preventDefault());
+
     // Add event listeners
-    form.addEventListener('submit', handleSubmit);
+    installLink.addEventListener('click', handleInstallClick);
     copyLinkBtn.addEventListener('click', handleCopyClick);
+
+    // Add subtitle pair button handler
+    const addPairBtn = document.getElementById('addSubtitlePair');
+    addPairBtn.addEventListener('click', () => addSubtitlePair());
+
+    // Add initial pair by default (English, single mode)
+    addSubtitlePair('eng', '');
 
     console.log('Subtitle Pro configuration UI initialized');
   }

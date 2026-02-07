@@ -4,7 +4,7 @@ This file contains durable instructions for Claude Code when working on this pro
 
 ## Project Overview
 
-**Subtitle Pro** is a Stremio addon for multi-provider subtitle search with OpenSubtitles and Subsource integration. It's deployed as serverless functions on Vercel.
+**Subtitle Pro** is a Stremio addon for multi-provider subtitle search with OpenSubtitles and Subsource integration, featuring dual subtitle support for language learning. It's deployed as serverless functions on Vercel.
 
 ## Critical Rules
 
@@ -42,6 +42,8 @@ This file contains durable instructions for Claude Code when working on this pro
 - Validate config structure before use
 - Provide sensible defaults for missing fields
 - Never store config server-side
+- Config uses `subtitlePairs` array (not `languages` - backward compat handled in config-parser)
+- Each pair: `{ id, primary, secondary (nullable), enabled }`
 
 ### File Operations
 
@@ -53,7 +55,7 @@ This file contains durable instructions for Claude Code when working on this pro
 
 **Documentation Updates:**
 - Update documentation when adding features
-- Keep FEATURES.md in sync with actual features
+- Keep ARCHITECTURE.md in sync with actual features
 - Update README.md for user-facing changes
 - Add examples for complex features
 
@@ -238,14 +240,17 @@ npm test
 ### Local Development
 
 ```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Start dev server
-npm run dev
+# Start local dev server (recommended)
+npm start
 
 # Visit http://localhost:3000/configure
+
+# Alternative: Vercel CLI (may have issues with recursive invocation)
+npm install -g vercel
+vercel dev
 ```
+
+**Note:** `npm start` runs `server.js`, a custom Node.js HTTP server that mimics Vercel's routing. It supports all endpoints including merged subtitles and debug routes.
 
 ### Manual Deployment
 
@@ -293,10 +298,16 @@ vercel --prod
 
 ### Internal Docs
 - README.md - User guide
-- FEATURES.md - Feature documentation
+- ARCHITECTURE.md - Feature & architecture documentation (includes project structure, config format, all endpoints)
 - DEPLOYMENT.md - Deployment guide
 - CONTRIBUTING.md - Contribution guide
-- CICD_SETUP.md - CI/CD setup
+
+### Key Source Files
+- `api/_lib/utils/languages.js` - 75 language definitions (shared by backend and frontend)
+- `api/_lib/utils/subtitle-merger.js` - SRT parsing and dual subtitle merging
+- `api/_lib/utils/config-parser.js` - Config encoding/decoding with backward compat
+- `api/subtitles/merged/[pairId].js` - Merged subtitle endpoint
+- `server.js` - Local dev server with Vercel-like routing
 
 ## Contact
 
@@ -322,4 +333,4 @@ For questions or issues:
 ---
 
 **Last Updated:** February 7, 2026
-**Version:** 1.0.0
+**Version:** 1.1.0

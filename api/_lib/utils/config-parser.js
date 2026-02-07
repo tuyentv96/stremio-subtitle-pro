@@ -26,9 +26,46 @@ export function parseConfig(configParam) {
       throw new Error('At least one provider must be enabled with an API key');
     }
 
+    // Parse subtitle pairs with backward compatibility
+    let subtitlePairs = [];
+
+    if (config.subtitlePairs && Array.isArray(config.subtitlePairs)) {
+      // New format: use subtitlePairs directly
+      subtitlePairs = config.subtitlePairs;
+    } else if (config.languages && Array.isArray(config.languages)) {
+      // Old format: convert languages array to subtitlePairs with secondary: null
+      subtitlePairs = config.languages.map((lang, index) => ({
+        id: `pair_${index}_${lang}_null`,
+        primary: lang,
+        secondary: null,
+        enabled: true
+      }));
+    }
+
+    // Validate and filter pairs
+    subtitlePairs = subtitlePairs.filter(pair => {
+      // Primary is required
+      if (!pair.primary) return false;
+      // Primary and secondary must be different if both present
+      if (pair.secondary && pair.primary === pair.secondary) return false;
+      // Only include enabled pairs
+      if (pair.enabled === false) return false;
+      return true;
+    });
+
+    // Default to English if no valid pairs
+    if (subtitlePairs.length === 0) {
+      subtitlePairs = [{
+        id: 'pair_0_eng_null',
+        primary: 'eng',
+        secondary: null,
+        enabled: true
+      }];
+    }
+
     // Apply defaults
     return {
-      languages: config.languages || ['eng'],
+      subtitlePairs,
       providers: {
         opensubtitles: config.providers.opensubtitles || { enabled: false },
         subsource: config.providers.subsource || { enabled: false }

@@ -1,3 +1,5 @@
+import { LANGUAGES, LANGUAGE_MAP } from './_lib/utils/languages.js';
+
 /**
  * Configuration UI endpoint
  * Serves the HTML configuration page
@@ -7,6 +9,11 @@ export default async function handler(req, res) {
   const protocol = req.headers['x-forwarded-proto'] || 'https';
   const host = req.headers['x-forwarded-host'] || req.headers.host;
   const baseUrl = `${protocol}://${host}`;
+
+  // Generate language options HTML
+  const languageOptions = LANGUAGES.map(lang =>
+    `<option value="${lang.code}">${lang.name}</option>`
+  ).join('\n        ');
 
   const html = `
 <!DOCTYPE html>
@@ -37,140 +44,103 @@ export default async function handler(req, res) {
     </header>
 
     <form id="configForm">
-      <!-- OpenSubtitles Provider -->
+      <!-- Subtitle Provider Configuration -->
       <div class="card">
         <div class="card-header">
-          <h2>OpenSubtitles</h2>
+          <h2>Subtitle Provider Configuration</h2>
         </div>
         <div class="card-body">
-          <p class="help-text">The largest subtitle database with millions of subtitles</p>
-          <div class="form-group">
-            <label for="osApiKey">API Key (optional)</label>
-            <input
-              type="text"
-              id="osApiKey"
-              name="osApiKey"
-              placeholder="Enter your OpenSubtitles API key"
-            >
-            <a href="https://www.opensubtitles.com/en/consumers" target="_blank" class="link">
-              Get your API key →
-            </a>
+          <div class="provider-group">
+            <h3 class="provider-title">OpenSubtitles</h3>
+            <p class="help-text">The largest subtitle database with millions of subtitles</p>
+            <div class="form-group">
+              <label for="osApiKey">API Key (optional)</label>
+              <input
+                type="text"
+                id="osApiKey"
+                name="osApiKey"
+                placeholder="Enter your OpenSubtitles API key"
+              >
+              <a href="https://www.opensubtitles.com/en/consumers" target="_blank" class="link">
+                Get your API key →
+              </a>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Subsource Provider -->
-      <div class="card">
-        <div class="card-header">
-          <h2>Subsource</h2>
-        </div>
-        <div class="card-body">
-          <p class="help-text">Alternative subtitle provider with quality subtitles</p>
-          <div class="form-group">
-            <label for="ssApiKey">API Key (optional)</label>
-            <input
-              type="text"
-              id="ssApiKey"
-              name="ssApiKey"
-              placeholder="Enter your Subsource API key"
-            >
-            <a href="https://subsource.net/api" target="_blank" class="link">
-              Get your API key →
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Language Selection -->
-      <div class="card">
-        <div class="card-header">
-          <h2>Subtitle Languages</h2>
-        </div>
-        <div class="card-body">
-          <p class="help-text">Select one or more languages (multiple selection allowed)</p>
-          <div class="form-group">
-            <div class="language-grid">
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="eng" checked>
-                <span>English</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="vie">
-                <span>Vietnamese</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="spa">
-                <span>Spanish</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="fra">
-                <span>French</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="deu">
-                <span>German</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="ita">
-                <span>Italian</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="por">
-                <span>Portuguese</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="rus">
-                <span>Russian</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="ara">
-                <span>Arabic</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="jpn">
-                <span>Japanese</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="kor">
-                <span>Korean</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="zho">
-                <span>Chinese</span>
-              </label>
-              <label class="language-checkbox">
-                <input type="checkbox" name="language" value="hin">
-                <span>Hindi</span>
-              </label>
+          <div class="provider-group">
+            <h3 class="provider-title">Subsource</h3>
+            <p class="help-text">Alternative subtitle provider with quality subtitles</p>
+            <div class="form-group">
+              <label for="ssApiKey">API Key (optional)</label>
+              <input
+                type="text"
+                id="ssApiKey"
+                name="ssApiKey"
+                placeholder="Enter your Subsource API key"
+              >
+              <a href="https://subsource.net/api" target="_blank" class="link">
+                Get your API key →
+              </a>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Submit Button -->
-      <button type="submit" class="btn-primary">Generate Install Link</button>
-    </form>
-
-    <!-- Result Section -->
-    <div id="result" class="result hidden">
-      <div class="card success">
+      <!-- Subtitle Configuration -->
+      <div class="card">
         <div class="card-header">
-          <h2>✓ Configuration Ready</h2>
+          <h2>Subtitle Configuration</h2>
+        </div>
+        <div class="card-body">
+          <p class="help-text">Configure single or dual language subtitles. Select "None" for secondary to enable single language mode.</p>
+          <div class="pair-labels">
+            <span class="pair-label">Primary Language</span>
+            <span class="pair-label">Secondary Language</span>
+            <span class="pair-label-spacer"></span>
+          </div>
+          <div id="subtitlePairsContainer">
+            <!-- Pairs will be added here dynamically -->
+          </div>
+          <button type="button" id="addSubtitlePair" class="btn-secondary">
+            + Add Language
+          </button>
+        </div>
+      </div>
+
+      <!-- Template for subtitle pair -->
+      <template id="subtitlePairTemplate">
+        <div class="subtitle-pair">
+          <select class="primary-lang-select" required>
+            <option value="">Primary...</option>
+            ${languageOptions}
+          </select>
+          <select class="secondary-lang-select">
+            <option value="">None (single)</option>
+            ${languageOptions}
+          </select>
+          <button type="button" class="btn-remove-pair">Remove</button>
+        </div>
+      </template>
+
+      <!-- Install Section -->
+      <div class="card install-card">
+        <div class="card-header">
+          <h2>Install Addon</h2>
         </div>
         <div class="card-body">
           <p class="help-text">Click the button below to install the addon in Stremio:</p>
           <a id="installLink" href="#" class="btn-install">Install in Stremio</a>
-          <button id="copyLink" class="btn-secondary">Copy Install URL</button>
+          <button id="copyLink" class="btn-copy">Copy Install URL</button>
           <div class="manifest-url">
             <code id="manifestUrl"></code>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   </div>
 
   <script>
     window.BASE_URL = '${baseUrl}';
+    window.LANGUAGE_MAP = ${JSON.stringify(LANGUAGE_MAP)};
   </script>
   <script src="/app.js"></script>
 </body>

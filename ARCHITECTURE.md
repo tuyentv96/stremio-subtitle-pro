@@ -50,22 +50,41 @@ Subtitle Pro is a multi-provider Stremio addon that aggregates subtitles from Op
 - Same metadata as movies
 - Supports all seasons and episodes
 
-**Language Support**
-- English (eng)
-- Spanish (spa)
-- French (fra)
-- German (deu)
-- Italian (ita)
-- Portuguese (por)
-- Russian (rus)
-- Arabic (ara)
-- Japanese (jpn)
-- Korean (kor)
-- Chinese (zho)
-- Hindi (hin)
-- Multi-language selection supported
+**Language Support (75 Languages)**
+- Afrikaans, Albanian, Arabic, Armenian, Azerbaijani, Basque, Belarusian, Bengali
+- Bosnian, Breton, Bulgarian, Burmese, Catalan, Chinese (Simplified), Chinese (Traditional)
+- Croatian, Czech, Danish, Dutch, English, Esperanto, Estonian, Finnish, French
+- Georgian, German, Greek, Hebrew, Hindi, Hungarian, Icelandic, Indonesian, Irish
+- Italian, Japanese, Kannada, Kazakh, Khmer, Korean, Kurdish, Latvian, Lithuanian
+- Luxembourgish, Macedonian, Malay, Malayalam, Maltese, Marathi, Mongolian, Nepali
+- Norwegian, Persian, Polish, Portuguese, Portuguese (Brazil), Romanian, Russian
+- Serbian, Sinhala, Slovak, Slovenian, Somali, Spanish, Spanish (Latin America)
+- Swahili, Swedish, Tagalog, Tamil, Telugu, Thai, Turkish, Ukrainian, Urdu
+- Uzbek, Vietnamese, Welsh
+- Full list defined in `api/_lib/utils/languages.js`
 
-### 3. Configuration System
+### 3. Dual Subtitle Support (Language Learning)
+
+**Overview**
+- Display two subtitle languages simultaneously for language learning
+- Primary language shown on top, secondary language on bottom
+- Configurable via subtitle pairs (primary + optional secondary)
+- SRT files merged on-the-fly with time alignment
+
+**Subtitle Pairs**
+- Each pair has a required primary language and optional secondary language
+- Secondary set to "None" = single language mode (standard subtitles)
+- Secondary set to a language = dual language mode (merged subtitles)
+- Multiple pairs supported (e.g., "English + Vietnamese" and "Spanish" single)
+
+**SRT Merging Algorithm**
+- Parses both SRT files into structured objects
+- Aligns subtitles by time overlap (finds maximum overlap between primary and secondary)
+- Falls back to closest subtitle within 2 seconds if no overlap found
+- Generates merged SRT with both languages' text per entry
+- Uses primary subtitle's timing for merged output
+
+### 4. Configuration System
 
 **URL-Based Configuration**
 - Base64-encoded config in URL
@@ -75,20 +94,20 @@ Subtitle Pro is a multi-provider Stremio addon that aggregates subtitles from Op
 - Privacy-preserving (no server-side storage)
 
 **Configuration Options**
-- Provider enable/disable toggles
-- API key inputs for each provider
-- Language multi-select
-- Primary provider selection
-- Fallback enable/disable
+- Provider API key inputs (auto-enabled when key provided)
+- Subtitle pair management (add/remove pairs)
+- Primary/secondary language dropdown selectors per pair
+- 75 languages available in dropdowns
 
 **Validation**
-- At least one provider must be enabled
-- API keys required for enabled providers
-- At least one language must be selected
+- At least one API key must be provided
+- At least one subtitle pair must be configured
+- Primary language is required for each pair
+- Primary and secondary languages must be different
 - Real-time form validation
 - Clear error messages
 
-### 4. User Interface
+### 5. User Interface
 
 **Modern Design**
 - Dark theme (purple/blue gradient accent)
@@ -99,22 +118,22 @@ Subtitle Pro is a multi-provider Stremio addon that aggregates subtitles from Op
 - Accessible color contrast
 
 **Interactive Elements**
-- Toggle switches for providers
-- Multi-select dropdown for languages
-- Collapsible advanced settings
-- Copy to clipboard button
-- One-click Stremio install
+- API key inputs for providers
+- Subtitle pair manager with add/remove buttons
+- Primary/secondary language dropdown selectors (75 languages each)
+- Always-visible Install and Copy buttons (no "Generate" step)
+- Install button prominent, Copy button secondary
 - Visual feedback for all actions
 
 **User Experience**
 - Clear help text and instructions
 - Links to provider documentation
 - Inline validation messages
-- Loading states
-- Success confirmations
+- "None" option for secondary language (single language mode)
+- Empty state message when no pairs configured
 - Error recovery guidance
 
-### 5. API Endpoints
+### 6. API Endpoints
 
 **Manifest Endpoint**
 ```
@@ -122,7 +141,7 @@ GET /[config]/manifest.json
 ```
 - Returns Stremio addon manifest
 - Parses Base64 config from URL
-- Dynamic description based on enabled providers
+- Dynamic description based on enabled providers and language count
 - Configurable flag set to true
 - CORS headers enabled
 
@@ -131,9 +150,9 @@ GET /[config]/manifest.json
 GET /[config]/subtitles/movie/[id].json
 ```
 - Searches subtitles for movies
-- Queries configured providers
-- Implements fallback logic
-- Returns deduplicated results
+- Queries configured providers in parallel
+- Returns single subtitles for pairs with no secondary
+- Returns merged subtitle URLs for dual language pairs
 - Stremio-compatible format
 
 **Series Subtitles Endpoint**
@@ -142,9 +161,19 @@ GET /[config]/subtitles/series/[id].json
 ```
 - Searches subtitles for TV series
 - Parses season/episode from ID
-- Same fallback and merging logic
+- Same dual subtitle logic as movies
 - Handles complex series structures
 - Stremio-compatible format
+
+**Merged Subtitles Endpoint**
+```
+GET /[config]/subtitles/merged/[pairId].srt?primaryUrl=...&secondaryUrl=...
+```
+- Fetches two SRT files from provided URLs
+- Merges them with time alignment
+- Returns combined SRT with both languages
+- In-memory cache (5 min TTL, max 100 entries)
+- Used by Stremio when user selects a dual subtitle track
 
 **Configuration UI Endpoint**
 ```
@@ -152,11 +181,11 @@ GET /configure
 GET /
 ```
 - Serves HTML configuration page
-- Injects base URL for link generation
+- Injects base URL and language map for link generation
 - Mobile-responsive interface
-- Self-contained (CSS/JS inline initially)
+- Subtitle pair management UI
 
-### 6. Rate Limiting
+### 7. Rate Limiting
 
 **Implementation**
 - Uses `p-queue` library
@@ -171,7 +200,7 @@ GET /
 - Adjustable per provider needs
 - Respects API terms of service
 
-### 7. Error Handling
+### 8. Error Handling
 
 **Comprehensive Coverage**
 - Custom `SubtitleError` class
@@ -196,7 +225,7 @@ GET /
 - User-friendly error messages
 - Automatic fallback attempts
 
-### 8. Performance Optimization
+### 9. Performance Optimization
 
 **Serverless Architecture**
 - Vercel serverless functions
@@ -215,8 +244,8 @@ GET /
 **Caching Strategy**
 - Browser caching for static assets
 - Vercel CDN for global distribution
-- No server-side caching (stateless)
-- Fresh results on every query
+- In-memory cache for merged subtitles (5 min TTL, max 100 entries per instance)
+- Fresh results on every subtitle query
 
 ---
 
@@ -259,28 +288,34 @@ subtitle-pro-plugin/
 │   │   └── utils/                    # Utility functions
 │   │       ├── config-parser.js      # Config encoding/decoding
 │   │       ├── error-handler.js      # Error handling utilities
-│   │       └── rate-limiter.js       # Rate limiting queues
+│   │       ├── languages.js          # 75 language definitions
+│   │       ├── rate-limiter.js       # Rate limiting queues
+│   │       └── subtitle-merger.js    # SRT parsing and merging
 │   ├── subtitles/
+│   │   ├── merged/[pairId].js        # Merged dual subtitle endpoint
 │   │   ├── movie/[id].js             # Movie subtitle handler
 │   │   └── series/[id].js            # Series subtitle handler
 │   ├── configure.js                  # Configuration UI endpoint
+│   ├── debug-manifest.js             # Debug endpoint
 │   └── manifest.js                   # Manifest endpoint
-├── web/                              # Frontend static files
+├── public/                           # Frontend static files
 │   ├── app.js                        # Frontend JavaScript
 │   ├── index.html                    # Redirect page
 │   └── styles.css                    # CSS styling
 ├── .env.example                      # Environment template
 ├── .gitignore                        # Git exclusions
 ├── .vercelignore                     # Vercel exclusions
+├── CLAUDE.md                         # Claude Code instructions
 ├── CONTRIBUTING.md                   # Contribution guidelines
 ├── DEPLOYMENT.md                     # Deployment instructions
-├── FEATURES.md                       # This file
-├── IMPLEMENTATION_SUMMARY.md         # Implementation details
+├── ARCHITECTURE.md                   # This file
 ├── LICENSE                           # MIT License
 ├── QUICKSTART.md                     # Quick start guide
 ├── README.md                         # Main documentation
 ├── package.json                      # NPM configuration
+├── server.js                         # Local development server
 ├── test-config.js                    # Test utilities
+├── test-manifest.js                  # Manifest test utilities
 └── vercel.json                       # Vercel configuration
 ```
 
@@ -297,11 +332,21 @@ subtitle-pro-plugin/
 **Subtitle Request Flow**
 1. Stremio makes request to subtitle endpoint
 2. Serverless function parses config from URL
-3. Initializes configured providers
-4. Queries primary provider
-5. Falls back to secondary if needed
-6. Merges and deduplicates results
-7. Returns Stremio-compatible JSON
+3. Collects unique languages from all subtitle pairs
+4. Queries all enabled providers in parallel
+5. Deduplicates results by subtitle ID
+6. For single language pairs: returns primary subtitle directly
+7. For dual language pairs: generates merged subtitle URL with both subtitle URLs as params
+8. Returns Stremio-compatible JSON
+
+**Merged Subtitle Flow (Dual Language)**
+1. Stremio requests merged subtitle URL (triggered when user selects dual track)
+2. Endpoint receives primary and secondary subtitle URLs as query params
+3. Downloads both SRT files in parallel
+4. Parses SRT entries and aligns by time overlap
+5. Merges text (primary on top, secondary on bottom)
+6. Caches result for 5 minutes
+7. Returns merged SRT file
 
 ### Security Considerations
 
@@ -382,7 +427,20 @@ subtitle-pro-plugin/
 
 ```javascript
 {
-  languages: ['eng', 'spa'],
+  subtitlePairs: [
+    {
+      id: 'pair_0_eng_vie',
+      primary: 'eng',        // Required: primary language
+      secondary: 'vie',      // Optional: secondary language (null for single mode)
+      enabled: true
+    },
+    {
+      id: 'pair_1_spa_null',
+      primary: 'spa',
+      secondary: null,        // null = single language mode
+      enabled: true
+    }
+  ],
   providers: {
     opensubtitles: {
       enabled: true,
@@ -392,13 +450,11 @@ subtitle-pro-plugin/
       enabled: false,
       apiKey: ''
     }
-  },
-  preferences: {
-    priorityProvider: 'opensubtitles',
-    fallbackEnabled: true
   }
 }
 ```
+
+**Backward Compatibility:** Old configs with `languages: ['eng', 'spa']` are automatically converted to `subtitlePairs` with `secondary: null` for each language.
 
 ---
 
@@ -434,6 +490,15 @@ User watching TV series:
 - Play series episodes
 - Subtitles automatically load for each episode
 - Correct season/episode detected
+
+### 5. Language Learning with Dual Subtitles
+User learning a new language:
+- Add a subtitle pair: Primary = target language (e.g., English), Secondary = native language (e.g., Vietnamese)
+- Install addon in Stremio
+- Play any movie or series
+- Select the "English + Vietnamese" subtitle track
+- Both languages display simultaneously (target language on top, native on bottom)
+- No need to switch between tracks manually
 
 ---
 
@@ -477,12 +542,18 @@ User watching TV series:
 - Subtitle format selection (SRT, VTT, etc.)
 - Quality filtering
 - Automatic language detection
-- Subtitle preview
+- Subtitle preview in configuration UI
 - Download history
 - Favorites/bookmarks
 
+### Dual Subtitle Enhancements
+- Custom formatting options (separator style, font size, colors)
+- Time offset adjustment (delay secondary subtitle by N seconds)
+- Support for 3+ languages simultaneously
+- Persistent caching with Vercel KV
+
 ### Performance Improvements
-- Caching layer (Redis/Vercel KV)
+- Caching layer (Redis/Vercel KV) for merged subtitles
 - Predictive loading
 - Compression optimization
 - Response time monitoring
@@ -523,6 +594,16 @@ User watching TV series:
 **Current Version:** 1.0.0
 
 **Changelog:**
+- v1.1.0 (Dual Subtitle Update)
+  - Dual subtitle support for language learning (primary + secondary merged)
+  - Subtitle pair configuration UI with dropdown selectors
+  - 75 languages supported (up from 12)
+  - SRT merging with time alignment algorithm
+  - Merged subtitle endpoint with caching
+  - Always-visible Install and Copy buttons
+  - Backward compatibility with old config format
+  - Local development server (server.js)
+
 - v1.0.0 (Initial Release)
   - Multi-provider support (OpenSubtitles + Subsource)
   - Configuration UI

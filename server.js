@@ -23,7 +23,9 @@ const handlers = {
   manifest: null,
   configure: null,
   movieSubtitles: null,
-  seriesSubtitles: null
+  seriesSubtitles: null,
+  mergedSubtitles: null,
+  debugManifest: null
 };
 
 // Load handlers dynamically
@@ -32,11 +34,15 @@ async function loadHandlers() {
   const configureModule = await import('./api/configure.js');
   const movieModule = await import('./api/subtitles/movie/[id].js');
   const seriesModule = await import('./api/subtitles/series/[id].js');
+  const mergedModule = await import('./api/subtitles/merged/[pairId].js');
+  const debugModule = await import('./api/debug-manifest.js');
 
   handlers.manifest = manifestModule.default;
   handlers.configure = configureModule.default;
   handlers.movieSubtitles = movieModule.default;
   handlers.seriesSubtitles = seriesModule.default;
+  handlers.mergedSubtitles = mergedModule.default;
+  handlers.debugManifest = debugModule.default;
 }
 
 // Simple request/response wrapper to match Vercel's API
@@ -79,6 +85,11 @@ class Response {
     this.res.writeHead(this.statusCode, this.headers);
     this.res.end(data);
   }
+
+  end() {
+    this.res.writeHead(this.statusCode, this.headers);
+    this.res.end();
+  }
 }
 
 // Route matching
@@ -86,6 +97,12 @@ function matchRoute(url) {
   // Root and /configure
   if (url === '/' || url === '/configure') {
     return { handler: 'configure', params: {} };
+  }
+
+  // Debug manifest: /debug/:config/manifest.json
+  const debugManifestMatch = url.match(/^\/debug\/([^/]+)\/manifest\.json$/);
+  if (debugManifestMatch) {
+    return { handler: 'debugManifest', params: { config: debugManifestMatch[1] } };
   }
 
   // Manifest: /:config/manifest.json
@@ -112,6 +129,25 @@ function matchRoute(url) {
     };
   }
 
+  // Merged subtitles: /:config/subtitles/merged/:pairId.srt
+  const mergedMatch = url.match(/^\/([^/]+)\/subtitles\/merged\/([^/]+)\.srt(.*)$/);
+  if (mergedMatch) {
+    // Parse query string for primaryUrl and secondaryUrl
+    const queryString = mergedMatch[3];
+    const params = { config: mergedMatch[1], pairId: mergedMatch[2] };
+
+    if (queryString) {
+      const urlParams = new URLSearchParams(queryString.substring(1)); // Remove leading ?
+      params.primaryUrl = urlParams.get('primaryUrl');
+      params.secondaryUrl = urlParams.get('secondaryUrl');
+    }
+
+    return {
+      handler: 'mergedSubtitles',
+      params
+    };
+  }
+
   // Static files
   if (url.match(/\.(css|js|html|png|jpg|svg|ico)$/)) {
     return { handler: 'static', params: { file: url } };
@@ -122,7 +158,7 @@ function matchRoute(url) {
 
 // Serve static files
 function serveStatic(filePath, res) {
-  const fullPath = join(__dirname, 'web', filePath);
+  const fullPath = join(__dirname, 'public', filePath);
 
   fs.readFile(fullPath, (err, data) => {
     if (err) {

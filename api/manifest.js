@@ -6,18 +6,41 @@ import { createErrorResponse } from './_lib/utils/error-handler.js';
  * Returns addon metadata and capabilities
  */
 export default async function handler(req, res) {
+  // Handle OPTIONS request for CORS preflight
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(200).end();
+  }
+
   try {
     // Extract config from query parameter
     const configParam = req.query.config;
 
+    console.log('Manifest request:', {
+      method: req.method,
+      url: req.url,
+      hasConfig: !!configParam,
+      configLength: configParam?.length
+    });
+
     if (!configParam) {
+      console.error('Missing config parameter. Query:', req.query);
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Content-Type', 'application/json');
       return res.status(400).json({
         error: 'Configuration parameter is required'
       });
     }
 
     // Parse and validate config
+    console.log('Parsing config...');
     const config = parseConfig(configParam);
+    console.log('Config parsed successfully:', {
+      pairsCount: config.subtitlePairs.length,
+      providers: Object.keys(config.providers).filter(p => config.providers[p]?.enabled)
+    });
 
     // Build provider list for description
     const enabledProviders = [];
@@ -28,12 +51,21 @@ export default async function handler(req, res) {
       enabledProviders.push('Subsource');
     }
 
+    // Count unique languages from subtitle pairs
+    const uniqueLanguages = new Set();
+    config.subtitlePairs.forEach(pair => {
+      uniqueLanguages.add(pair.primary);
+      if (pair.secondary) {
+        uniqueLanguages.add(pair.secondary);
+      }
+    });
+
     // Create manifest
     const manifest = {
       id: 'com.subtitle.pro',
       version: '1.0.0',
       name: 'Subtitle Pro',
-      description: `Multi-provider subtitle search (${enabledProviders.join(' + ')}) with support for ${config.languages.length} languages`,
+      description: `Multi-provider subtitle search (${enabledProviders.join(' + ')}) with support for ${uniqueLanguages.size} languages`,
       resources: ['subtitles'],
       types: ['movie', 'series'],
       idPrefixes: ['tt'],
