@@ -1,5 +1,5 @@
 {
-  "name": "subtitle-pro-plugin",
+  "name": "subtitle-pro",
   "version": "1.0.0",
   "description": "Stremio addon for multi-provider subtitle search with OpenSubtitles and Subsource",
   "main": "index.js",

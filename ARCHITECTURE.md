@@ -278,7 +278,7 @@ GET /
 ### Project Structure
 
 ```
-subtitle-pro-plugin/
+subtitle-pro/
 ├── api/                              # Backend serverless functions
 │   ├── _lib/                         # Internal libraries
 │   │   ├── providers/                # Provider implementations
@@ -633,8 +633,8 @@ User learning a new language:
 - Pull Requests: Code contributions welcome
 
 ### Contact
-- GitHub: https://github.com/tuyentv96/subtitle-pro-plugin
-- Issues: https://github.com/tuyentv96/subtitle-pro-plugin/issues
+- GitHub: https://github.com/tuyentv96/stremio-subtitle-pro
+- Issues: https://github.com/tuyentv96/stremio-subtitle-pro/issues
 
 ---
 

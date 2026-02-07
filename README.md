@@ -1,8 +1,8 @@
 # Subtitle Pro - Stremio Addon
 
-![Deploy to Vercel](https://github.com/tuyentv96/subtitle-pro-plugin/workflows/Deploy%20to%20Vercel/badge.svg)
-![Tests](https://github.com/tuyentv96/subtitle-pro-plugin/workflows/Tests/badge.svg)
-![Code Quality](https://github.com/tuyentv96/subtitle-pro-plugin/workflows/Code%20Quality/badge.svg)
+![Deploy to Vercel](https://github.com/tuyentv96/stremio-subtitle-pro/workflows/Deploy%20to%20Vercel/badge.svg)
+![Tests](https://github.com/tuyentv96/stremio-subtitle-pro/workflows/Tests/badge.svg)
+![Code Quality](https://github.com/tuyentv96/stremio-subtitle-pro/workflows/Code%20Quality/badge.svg)
 
 A powerful multi-provider subtitle addon for Stremio that integrates with **OpenSubtitles** and **Subsource**. Users can configure their own API keys, select preferred languages, and enjoy intelligent provider fallback for maximum reliability.
 
@@ -67,7 +67,7 @@ Click the "Install in Stremio" button or copy the manifest URL and add it manual
 
 ### Deploy to Vercel (Recommended)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tuyentv96/subtitle-pro-plugin)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tuyentv96/stremio-subtitle-pro)
 
 Or manually:
 
@@ -76,8 +76,8 @@ Or manually:
 npm install -g vercel
 
 # Clone the repository
-git clone https://github.com/tuyentv96/subtitle-pro-plugin.git
-cd subtitle-pro-plugin
+git clone https://github.com/tuyentv96/stremio-subtitle-pro.git
+cd subtitle-pro
 
 # Install dependencies
 npm install
@@ -101,7 +101,7 @@ npm run dev
 ## Project Structure
 
 ```
-subtitle-pro-plugin/
+subtitle-pro/
 ├── api/                          # Vercel serverless functions
 │   ├── manifest.js               # Addon manifest endpoint
 │   ├── configure.js              # Configuration UI endpoint
@@ -281,4 +281,4 @@ Built with:
 
 ## Support
 
-For issues and feature requests, please use the [GitHub issue tracker](https://github.com/tuyentv96/subtitle-pro-plugin/issues).
+For issues and feature requests, please use the [GitHub issue tracker](https://github.com/tuyentv96/stremio-subtitle-pro/issues).
