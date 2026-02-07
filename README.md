@@ -1,5 +1,9 @@
 # Subtitle Pro - Stremio Addon
 
+![Deploy to Vercel](https://github.com/yourusername/subtitle-pro-plugin/workflows/Deploy%20to%20Vercel/badge.svg)
+![Tests](https://github.com/yourusername/subtitle-pro-plugin/workflows/Tests/badge.svg)
+![Code Quality](https://github.com/yourusername/subtitle-pro-plugin/workflows/Code%20Quality/badge.svg)
+
 A powerful multi-provider subtitle addon for Stremio that integrates with **OpenSubtitles** and **Subsource**. Users can configure their own API keys, select preferred languages, and enjoy intelligent provider fallback for maximum reliability.
 
 ## Features
