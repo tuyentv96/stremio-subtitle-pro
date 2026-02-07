@@ -26,7 +26,7 @@ jobs:
       - name: Check for syntax errors
         run: |
           echo "Checking JavaScript files for syntax errors..."
-          find api web -name "*.js" -type f -exec node -c {} \;
+          find api public -name "*.js" -type f -exec node -c {} \;
 
       - name: Verify project structure
         run: |
@@ -37,7 +37,8 @@ jobs:
           test -d api/_lib/utils || exit 1
           test -d api/subtitles/movie || exit 1
           test -d api/subtitles/series || exit 1
-          test -d web || exit 1
+          test -d api/subtitles/merged || exit 1
+          test -d public || exit 1
 
           # Check required files exist
           test -f package.json || exit 1
@@ -49,7 +50,13 @@ jobs:
       - name: Verify package.json
         run: |
           echo "Verifying package.json..."
-          node -e "const pkg = require('./package.json'); if (!pkg.dependencies['stremio-addon-sdk']) throw new Error('Missing stremio-addon-sdk dependency');"
+          node --input-type=module -e "
+            import { readFileSync } from 'fs';
+            const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
+            if (!pkg.dependencies['stremio-addon-sdk']) {
+              throw new Error('Missing stremio-addon-sdk dependency');
+            }
+          "
           echo "✓ package.json is valid"
 
       - name: Code quality summary

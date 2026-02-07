@@ -65,7 +65,7 @@ export default async function handler(req, res) {
       id: 'com.subtitle.pro',
       version: '1.0.0',
       name: 'Subtitle Pro',
-      description: `Multi-provider subtitle search (${enabledProviders.join(' + ')}) with support for ${uniqueLanguages.size} languages`,
+      description: `Multi-provider subtitle search (${enabledProviders.join(' + ')}) with support for ${uniqueLanguages.size} language${uniqueLanguages.size === 1 ? '' : 's'}`,
       resources: ['subtitles'],
       types: ['movie', 'series'],
       idPrefixes: ['tt'],
