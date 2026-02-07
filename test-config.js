@@ -16,10 +16,6 @@ const testConfig = {
       enabled: true,
       apiKey: 'test-subsource-key'
     }
-  },
-  preferences: {
-    priorityProvider: 'opensubtitles',
-    fallbackEnabled: true
   }
 };
 
@@ -38,8 +34,7 @@ console.log('\nDecoded config:', JSON.stringify(decoded, null, 2));
 const isValid =
   decoded.languages.length === testConfig.languages.length &&
   decoded.providers.opensubtitles.enabled === testConfig.providers.opensubtitles.enabled &&
-  decoded.providers.subsource.enabled === testConfig.providers.subsource.enabled &&
-  decoded.preferences.priorityProvider === testConfig.preferences.priorityProvider;
+  decoded.providers.subsource.enabled === testConfig.providers.subsource.enabled;
 
 console.log('\n✓ Config encoding/decoding test:', isValid ? 'PASSED' : 'FAILED');
 

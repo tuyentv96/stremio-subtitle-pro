@@ -66,51 +66,22 @@ export default async function handler(req, res) {
       return res.status(200).json({ subtitles: [] });
     }
 
-    // Determine query order based on preferences
-    const primaryProvider = config.preferences.priorityProvider;
-    const fallbackEnabled = config.preferences.fallbackEnabled;
-
-    let subtitles = [];
-    let primarySuccess = false;
-
-    // Try primary provider first
-    if (providers.includes(primaryProvider) && providerInstances[primaryProvider]) {
+    // Query all enabled providers in parallel
+    const searchPromises = providers.map(async (providerName) => {
       try {
-        const results = await providerInstances[primaryProvider].search(searchParams);
-        subtitles = subtitles.concat(results);
-        primarySuccess = true;
+        const results = await providerInstances[providerName].search(searchParams);
+        return results;
       } catch (error) {
-        console.error(`Primary provider (${primaryProvider}) failed:`, error.message);
+        console.error(`Provider ${providerName} failed:`, error.message);
+        return [];
       }
-    }
+    });
 
-    // Try fallback provider if enabled and primary failed or returned no results
-    if (fallbackEnabled && (!primarySuccess || subtitles.length === 0)) {
-      const fallbackProvider = providers.find(p => p !== primaryProvider);
+    // Wait for all providers to respond
+    const allResults = await Promise.all(searchPromises);
 
-      if (fallbackProvider && providerInstances[fallbackProvider]) {
-        try {
-          const results = await providerInstances[fallbackProvider].search(searchParams);
-          subtitles = subtitles.concat(results);
-        } catch (error) {
-          console.error(`Fallback provider (${fallbackProvider}) failed:`, error.message);
-        }
-      }
-    }
-
-    // If both providers are enabled and fallback is enabled, query both
-    if (fallbackEnabled && providers.length > 1 && primarySuccess) {
-      const secondaryProvider = providers.find(p => p !== primaryProvider);
-
-      if (secondaryProvider && providerInstances[secondaryProvider]) {
-        try {
-          const results = await providerInstances[secondaryProvider].search(searchParams);
-          subtitles = subtitles.concat(results);
-        } catch (error) {
-          console.error(`Secondary provider (${secondaryProvider}) failed:`, error.message);
-        }
-      }
-    }
+    // Flatten and merge results from all providers
+    const subtitles = allResults.flat();
 
     // Deduplicate subtitles by ID
     const uniqueSubtitles = Array.from(

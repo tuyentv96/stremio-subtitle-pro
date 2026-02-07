@@ -11,64 +11,24 @@
   const copyLinkBtn = document.getElementById('copyLink');
   const manifestUrlEl = document.getElementById('manifestUrl');
 
-  // Provider toggles
-  const osEnabled = document.getElementById('osEnabled');
+  // API key inputs
   const osApiKey = document.getElementById('osApiKey');
-  const ssEnabled = document.getElementById('ssEnabled');
   const ssApiKey = document.getElementById('ssApiKey');
 
   // Language selection
   const languageSelect = document.getElementById('languages');
 
-  // Advanced settings
-  const priorityProvider = document.getElementById('priorityProvider');
-  const fallbackEnabled = document.getElementById('fallbackEnabled');
-
-  /**
-   * Toggle API key field based on provider enable state
-   */
-  function setupProviderToggles() {
-    osEnabled.addEventListener('change', function() {
-      osApiKey.required = this.checked;
-      osApiKey.disabled = !this.checked;
-      if (!this.checked) {
-        osApiKey.value = '';
-      }
-    });
-
-    ssEnabled.addEventListener('change', function() {
-      ssApiKey.required = this.checked;
-      ssApiKey.disabled = !this.checked;
-      if (!this.checked) {
-        ssApiKey.value = '';
-      }
-    });
-
-    // Initialize states
-    osApiKey.disabled = !osEnabled.checked;
-    ssApiKey.disabled = !ssEnabled.checked;
-  }
-
   /**
    * Validate form before submission
    */
   function validateForm() {
-    // Check if at least one provider is enabled
-    if (!osEnabled.checked && !ssEnabled.checked) {
-      alert('Please enable at least one subtitle provider');
-      return false;
-    }
+    // Check if at least one API key is provided
+    const hasOsKey = osApiKey.value.trim().length > 0;
+    const hasSsKey = ssApiKey.value.trim().length > 0;
 
-    // Check if enabled providers have API keys
-    if (osEnabled.checked && !osApiKey.value.trim()) {
-      alert('Please enter your OpenSubtitles API key');
+    if (!hasOsKey && !hasSsKey) {
+      alert('Please enter at least one API key (OpenSubtitles or Subsource)');
       osApiKey.focus();
-      return false;
-    }
-
-    if (ssEnabled.checked && !ssApiKey.value.trim()) {
-      alert('Please enter your Subsource API key');
-      ssApiKey.focus();
       return false;
     }
 
@@ -94,21 +54,20 @@
    * Generate configuration object
    */
   function generateConfig() {
+    const osKey = osApiKey.value.trim();
+    const ssKey = ssApiKey.value.trim();
+
     return {
       languages: getSelectedLanguages(),
       providers: {
         opensubtitles: {
-          enabled: osEnabled.checked,
-          apiKey: osEnabled.checked ? osApiKey.value.trim() : ''
+          enabled: osKey.length > 0,
+          apiKey: osKey
         },
         subsource: {
-          enabled: ssEnabled.checked,
-          apiKey: ssEnabled.checked ? ssApiKey.value.trim() : ''
+          enabled: ssKey.length > 0,
+          apiKey: ssKey
         }
-      },
-      preferences: {
-        priorityProvider: priorityProvider.value,
-        fallbackEnabled: fallbackEnabled.checked
       }
     };
   }
@@ -218,8 +177,6 @@
    * Initialize the app
    */
   function init() {
-    setupProviderToggles();
-
     // Add event listeners
     form.addEventListener('submit', handleSubmit);
     copyLinkBtn.addEventListener('click', handleCopyClick);

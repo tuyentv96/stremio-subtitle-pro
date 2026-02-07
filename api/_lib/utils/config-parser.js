@@ -32,10 +32,6 @@ export function parseConfig(configParam) {
       providers: {
         opensubtitles: config.providers.opensubtitles || { enabled: false },
         subsource: config.providers.subsource || { enabled: false }
-      },
-      preferences: {
-        priorityProvider: config.preferences?.priorityProvider || 'opensubtitles',
-        fallbackEnabled: config.preferences?.fallbackEnabled !== false
       }
     };
   } catch (error) {

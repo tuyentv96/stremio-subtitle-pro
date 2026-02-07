@@ -41,21 +41,16 @@ export default async function handler(req, res) {
       <div class="card">
         <div class="card-header">
           <h2>OpenSubtitles</h2>
-          <label class="toggle">
-            <input type="checkbox" id="osEnabled" name="osEnabled" checked>
-            <span class="toggle-slider"></span>
-          </label>
         </div>
         <div class="card-body">
           <p class="help-text">The largest subtitle database with millions of subtitles</p>
           <div class="form-group">
-            <label for="osApiKey">API Key</label>
+            <label for="osApiKey">API Key (optional)</label>
             <input
               type="text"
               id="osApiKey"
               name="osApiKey"
               placeholder="Enter your OpenSubtitles API key"
-              required
             >
             <a href="https://www.opensubtitles.com/en/consumers" target="_blank" class="link">
               Get your API key →
@@ -68,15 +63,11 @@ export default async function handler(req, res) {
       <div class="card">
         <div class="card-header">
           <h2>Subsource</h2>
-          <label class="toggle">
-            <input type="checkbox" id="ssEnabled" name="ssEnabled">
-            <span class="toggle-slider"></span>
-          </label>
         </div>
         <div class="card-body">
           <p class="help-text">Alternative subtitle provider with quality subtitles</p>
           <div class="form-group">
-            <label for="ssApiKey">API Key</label>
+            <label for="ssApiKey">API Key (optional)</label>
             <input
               type="text"
               id="ssApiKey"
@@ -115,31 +106,6 @@ export default async function handler(req, res) {
           </div>
         </div>
       </div>
-
-      <!-- Advanced Settings -->
-      <details class="card">
-        <summary class="card-header">
-          <h2>Advanced Settings</h2>
-        </summary>
-        <div class="card-body">
-          <div class="form-group">
-            <label for="priorityProvider">Primary Provider</label>
-            <select id="priorityProvider" name="priorityProvider">
-              <option value="opensubtitles" selected>OpenSubtitles</option>
-              <option value="subsource">Subsource</option>
-            </select>
-            <p class="help-text-small">This provider will be queried first</p>
-          </div>
-
-          <div class="form-group">
-            <label class="checkbox">
-              <input type="checkbox" id="fallbackEnabled" name="fallbackEnabled" checked>
-              <span>Enable fallback to secondary provider</span>
-            </label>
-            <p class="help-text-small">If primary provider fails, try secondary automatically</p>
-          </div>
-        </div>
-      </details>
 
       <!-- Submit Button -->
       <button type="submit" class="btn-primary">Generate Install Link</button>
