@@ -1,39 +1,24 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
+      "source": "/configure",
+      "destination": "/api/configure.js"
     },
     {
-      "src": "web/**/*",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/configure",
-      "dest": "/api/configure.js"
+      "source": "/",
+      "destination": "/api/configure.js"
     },
     {
-      "src": "/([^/]+)/manifest.json",
-      "dest": "/api/manifest.js?config=$1"
+      "source": "/:config/manifest.json",
+      "destination": "/api/manifest.js?config=:config"
     },
     {
-      "src": "/([^/]+)/subtitles/(movie|series)/([^/]+).json",
-      "dest": "/api/subtitles/$2/$3.js?config=$1"
+      "source": "/:config/subtitles/movie/:id.json",
+      "destination": "/api/subtitles/movie/[id].js?config=:config&id=:id"
     },
     {
-      "src": "/web/(.*)",
-      "dest": "/web/$1"
-    },
-    {
-      "src": "/(.*\\.(css|js|html|png|jpg|svg|ico))",
-      "dest": "/web/$1"
-    },
-    {
-      "src": "/",
-      "dest": "/api/configure.js"
+      "source": "/:config/subtitles/series/:id.json",
+      "destination": "/api/subtitles/series/[id].js?config=:config&id=:id"
     }
   ],
   "headers": [

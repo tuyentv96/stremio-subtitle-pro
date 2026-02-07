@@ -301,8 +301,8 @@ vercel --prod
 ## Contact
 
 For questions or issues:
-- GitHub Issues: https://github.com/yourusername/subtitle-pro-plugin/issues
-- GitHub Discussions: https://github.com/yourusername/subtitle-pro-plugin/discussions
+- GitHub Issues: https://github.com/tuyentv96/subtitle-pro-plugin/issues
+- GitHub Discussions: https://github.com/tuyentv96/subtitle-pro-plugin/discussions
 
 ---
 

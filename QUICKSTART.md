@@ -36,7 +36,7 @@ Click the "Install in Stremio" button and enjoy subtitles!
 npm install -g vercel
 
 # Clone and setup
-git clone https://github.com/yourusername/subtitle-pro-plugin.git
+git clone https://github.com/tuyentv96/subtitle-pro-plugin.git
 cd subtitle-pro-plugin
 npm install
 
@@ -104,7 +104,7 @@ npm run dev
 
 ## Support
 
-- 🐛 Report bugs: [GitHub Issues](https://github.com/yourusername/subtitle-pro-plugin/issues)
+- 🐛 Report bugs: [GitHub Issues](https://github.com/tuyentv96/subtitle-pro-plugin/issues)
 - 📖 Documentation: [README.md](README.md)
 - 💬 Questions: Open an issue with "Question" label
 

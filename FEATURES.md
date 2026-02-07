@@ -552,8 +552,8 @@ User watching TV series:
 - Pull Requests: Code contributions welcome
 
 ### Contact
-- GitHub: https://github.com/yourusername/subtitle-pro-plugin
-- Issues: https://github.com/yourusername/subtitle-pro-plugin/issues
+- GitHub: https://github.com/tuyentv96/subtitle-pro-plugin
+- Issues: https://github.com/tuyentv96/subtitle-pro-plugin/issues
 
 ---
 

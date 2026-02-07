@@ -29,7 +29,7 @@ npm install -g vercel
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/subtitle-pro-plugin.git
+git clone https://github.com/tuyentv96/subtitle-pro-plugin.git
 cd subtitle-pro-plugin
 
 # Install dependencies
@@ -83,7 +83,7 @@ git add .
 git commit -m "Initial commit"
 
 # Create repository on GitHub and push
-git remote add origin https://github.com/yourusername/subtitle-pro-plugin.git
+git remote add origin https://github.com/tuyentv96/subtitle-pro-plugin.git
 git push -u origin main
 ```
 
@@ -255,4 +255,4 @@ For higher usage, upgrade to Pro plan.
 For deployment issues:
 - Check Vercel documentation: https://vercel.com/docs
 - Vercel support: https://vercel.com/support
-- Project issues: https://github.com/yourusername/subtitle-pro-plugin/issues
+- Project issues: https://github.com/tuyentv96/subtitle-pro-plugin/issues

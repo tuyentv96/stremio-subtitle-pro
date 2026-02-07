@@ -117,7 +117,7 @@ This project includes GitHub Actions workflows for continuous integration and de
 
 2. **Create GitHub repository** and push:
    ```bash
-   git remote add origin https://github.com/yourusername/subtitle-pro-plugin.git
+   git remote add origin https://github.com/tuyentv96/subtitle-pro-plugin.git
    git branch -M main
    git push -u origin main
    ```
@@ -335,9 +335,9 @@ Add Slack/Discord notifications:
 Add to your README.md:
 
 ```markdown
-![Deploy](https://github.com/yourusername/subtitle-pro-plugin/workflows/Deploy%20to%20Vercel/badge.svg)
-![Tests](https://github.com/yourusername/subtitle-pro-plugin/workflows/Tests/badge.svg)
-![Lint](https://github.com/yourusername/subtitle-pro-plugin/workflows/Code%20Quality/badge.svg)
+![Deploy](https://github.com/tuyentv96/subtitle-pro-plugin/workflows/Deploy%20to%20Vercel/badge.svg)
+![Tests](https://github.com/tuyentv96/subtitle-pro-plugin/workflows/Tests/badge.svg)
+![Lint](https://github.com/tuyentv96/subtitle-pro-plugin/workflows/Code%20Quality/badge.svg)
 ```
 
 ---
@@ -347,7 +347,7 @@ Add to your README.md:
 For CI/CD issues:
 - GitHub Actions docs: https://docs.github.com/actions
 - Vercel CLI docs: https://vercel.com/docs/cli
-- Project issues: https://github.com/yourusername/subtitle-pro-plugin/issues
+- Project issues: https://github.com/tuyentv96/subtitle-pro-plugin/issues
 
 ---
 

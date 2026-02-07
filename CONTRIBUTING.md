@@ -13,7 +13,7 @@ Thank you for your interest in contributing to Subtitle Pro! This document provi
 
 ### Reporting Bugs
 
-1. Check if the bug has already been reported in [Issues](https://github.com/yourusername/subtitle-pro-plugin/issues)
+1. Check if the bug has already been reported in [Issues](https://github.com/tuyentv96/subtitle-pro-plugin/issues)
 2. If not, create a new issue with:
    - Clear title and description
    - Steps to reproduce
@@ -51,7 +51,7 @@ Thank you for your interest in contributing to Subtitle Pro! This document provi
 
 ```bash
 # Clone your fork
-git clone https://github.com/yourusername/subtitle-pro-plugin.git
+git clone https://github.com/tuyentv96/subtitle-pro-plugin.git
 cd subtitle-pro-plugin
 
 # Install dependencies

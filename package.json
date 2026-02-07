@@ -5,9 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "vercel dev",
+    "dev": "node -e \"console.log('\\n⚠️  To start development server, run: vercel dev\\n\\nNote: Make sure Vercel CLI is installed globally:\\n  npm install -g vercel\\n')\"",
+    "dev:vercel": "vercel dev",
     "deploy": "vercel --prod",
-    "test": "node test-config.js"
+    "test": "node test-config.js",
+    "start": "node server.js"
   },
   "keywords": [
     "stremio",

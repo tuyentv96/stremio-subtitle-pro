@@ -294,7 +294,7 @@ Safety:  ✅ PROTECTED
 ================================================================================
 
 1. Push to GitHub:
-   $ git remote add origin https://github.com/yourusername/subtitle-pro-plugin.git
+   $ git remote add origin https://github.com/tuyentv96/subtitle-pro-plugin.git
    $ git push -u origin master
 
 2. Set up GitHub Secrets:
