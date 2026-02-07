@@ -21,9 +21,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "stremio-addon-sdk": "^1.6.10",
+    "@vercel/analytics": "^1.6.1",
+    "node-fetch": "^3.0.0",
     "opensubtitles.com": "^1.1.0",
     "p-queue": "^8.0.0",
-    "node-fetch": "^3.0.0"
+    "stremio-addon-sdk": "^1.6.10"
   }
 }

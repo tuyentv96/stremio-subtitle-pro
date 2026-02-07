@@ -143,6 +143,7 @@ export default async function handler(req, res) {
     window.LANGUAGE_MAP = ${JSON.stringify(LANGUAGE_MAP)};
   </script>
   <script src="/app.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
   `;
