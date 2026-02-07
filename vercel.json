@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "web/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/configure",
+      "dest": "/api/configure.js"
+    },
+    {
+      "src": "/([^/]+)/manifest.json",
+      "dest": "/api/manifest.js?config=$1"
+    },
+    {
+      "src": "/([^/]+)/subtitles/(movie|series)/([^/]+).json",
+      "dest": "/api/subtitles/$2/$3.js?config=$1"
+    },
+    {
+      "src": "/web/(.*)",
+      "dest": "/web/$1"
+    },
+    {
+      "src": "/(.*\\.(css|js|html|png|jpg|svg|ico))",
+      "dest": "/web/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/api/configure.js"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type"
+        }
+      ]
+    }
+  ]
+}
