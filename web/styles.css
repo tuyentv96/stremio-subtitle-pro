@@ -219,6 +219,54 @@ select[multiple] {
   height: 18px;
 }
 
+/* Language Selection Grid */
+.language-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.language-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--background);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.language-checkbox:hover {
+  border-color: var(--primary);
+  background: var(--surface-light);
+}
+
+.language-checkbox input[type="checkbox"] {
+  margin-right: 0.5rem;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+
+.language-checkbox input[type="checkbox"]:checked {
+  accent-color: var(--primary);
+}
+
+.language-checkbox:has(input:checked) {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.language-checkbox span {
+  font-size: 0.9375rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
 /* Buttons */
 .btn-primary,
 .btn-secondary,
@@ -367,6 +415,19 @@ select[multiple] {
   .btn-install {
     font-size: 1rem;
     padding: 0.875rem 1.5rem;
+  }
+
+  .language-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .language-checkbox {
+    padding: 0.625rem;
+  }
+
+  .language-checkbox span {
+    font-size: 0.875rem;
   }
 }
 

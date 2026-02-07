@@ -15,9 +15,6 @@
   const osApiKey = document.getElementById('osApiKey');
   const ssApiKey = document.getElementById('ssApiKey');
 
-  // Language selection
-  const languageSelect = document.getElementById('languages');
-
   /**
    * Validate form before submission
    */
@@ -33,10 +30,9 @@
     }
 
     // Check if at least one language is selected
-    const selectedLanguages = Array.from(languageSelect.selectedOptions);
+    const selectedLanguages = getSelectedLanguages();
     if (selectedLanguages.length === 0) {
       alert('Please select at least one language');
-      languageSelect.focus();
       return false;
     }
 
@@ -44,10 +40,11 @@
   }
 
   /**
-   * Get selected languages from multi-select
+   * Get selected languages from checkboxes
    */
   function getSelectedLanguages() {
-    return Array.from(languageSelect.selectedOptions).map(opt => opt.value);
+    const checkboxes = document.querySelectorAll('input[name="language"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
   }
 
   /**

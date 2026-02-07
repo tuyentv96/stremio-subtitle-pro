@@ -84,25 +84,65 @@ export default async function handler(req, res) {
       <!-- Language Selection -->
       <div class="card">
         <div class="card-header">
-          <h2>Languages</h2>
+          <h2>Subtitle Languages</h2>
         </div>
         <div class="card-body">
-          <p class="help-text">Select subtitle languages (hold Ctrl/Cmd for multiple)</p>
+          <p class="help-text">Select one or more languages (multiple selection allowed)</p>
           <div class="form-group">
-            <select id="languages" name="languages" multiple size="8">
-              <option value="eng" selected>English</option>
-              <option value="spa">Spanish</option>
-              <option value="fra">French</option>
-              <option value="deu">German</option>
-              <option value="ita">Italian</option>
-              <option value="por">Portuguese</option>
-              <option value="rus">Russian</option>
-              <option value="ara">Arabic</option>
-              <option value="jpn">Japanese</option>
-              <option value="kor">Korean</option>
-              <option value="zho">Chinese</option>
-              <option value="hin">Hindi</option>
-            </select>
+            <div class="language-grid">
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="eng" checked>
+                <span>English</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="vie">
+                <span>Vietnamese</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="spa">
+                <span>Spanish</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="fra">
+                <span>French</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="deu">
+                <span>German</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="ita">
+                <span>Italian</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="por">
+                <span>Portuguese</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="rus">
+                <span>Russian</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="ara">
+                <span>Arabic</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="jpn">
+                <span>Japanese</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="kor">
+                <span>Korean</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="zho">
+                <span>Chinese</span>
+              </label>
+              <label class="language-checkbox">
+                <input type="checkbox" name="language" value="hin">
+                <span>Hindi</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
